@@ -1,6 +1,0 @@
-SOURCE_ACCOUNT = ""
-TRANSFER_MESSAGE = ""
-REFILL_PARAMS = [
-    # account_id : refill_limit
-    ("", ),
-]
