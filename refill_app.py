@@ -71,8 +71,9 @@ def refill_account(auth_session, destination_account, refill_goal, source_accoun
             destination_account, source_account = source_account, destination_account
             cinfo(f"...now sourcing from '{source_account['name']}' and topping up '{destination_account['name']}'")
         else:
-            cspecial(f"...above goal, but REVERSE_IF_ABOVE_GOAL=False")
+            cspecial(f"...but REVERSE_IF_ABOVE_GOAL=False")
             cspecial(f"...no further action.")
+            return
     else:
         source_available_balance = source_account['available']
         cinfo(f"...sourcing from '{source_account['name']}' at {fcurrency(source_available_balance)}")
