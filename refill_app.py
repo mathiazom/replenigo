@@ -46,6 +46,10 @@ def get_account_info(session, account_id):
 def refill_account(session, destination_account, refill_limit, source_account):
     cinfo(f"Requesting refill of '{destination_account['name']}'")
     cinfo(f"...the goal is {fcurrency(refill_limit)}")
+    if refill_goal < 0:
+        cerror(f"...refill goal must be nonnegative, was {refill_goal}")
+        cerror("...aborted.")
+        return
     destination_available_balance = destination_account['available']
     cinfo(f"...current available balance is {fcurrency(destination_available_balance)}")
     above_limit = refill_limit < destination_available_balance
