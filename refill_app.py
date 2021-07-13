@@ -31,9 +31,9 @@ def get_account(auth_session, account_id):
     ).json()
 
 
-# Transfer required amount from source_account_id to account_id so that
-# resulting available balance equals refill_goal.
-def refill_account(auth_session, destination_account, refill_goal, source_account):
+# Transfer required amount from source account to destination account
+# so that the resulting available balance equals refill goal.
+def refill_account(auth_session, destination_account, source_account, refill_goal):
     cinfo(f"Requesting refill of '{destination_account['name']}'")
 
     if refill_goal < 0:
@@ -103,7 +103,7 @@ def main():
     source_account = get_account(session, SOURCE_ACCOUNT_ID)
     for destination_account_id, refill_goal in REFILL_GOALS:
         destination_account = get_account(session, destination_account_id)
-        refill_account(session, destination_account, refill_goal, source_account)
+        refill_account(session, destination_account, source_account, refill_goal)
 
 
 if __name__ == "__main__":
