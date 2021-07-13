@@ -1,7 +1,4 @@
 from termcolor import cprint, colored
-import locale
-
-locale.setlocale(locale.LC_ALL, "Norwegian")
 
 
 def cspecial(x): cprint(x, 'cyan')
@@ -19,9 +16,11 @@ def csuccess(x): cprint(x, 'green')
 def cerror(x): cprint(x, 'red')
 
 
-# Format string to Norwegian currency
+# Format float string to use space as thousands separator and comma as decimal separator
+# (aka Norwegian style but without requiring the correct locale to be installed...)
+# (see https://www.python.org/dev/peps/pep-0378/)
 def fcurrency(s):
     return colored(
-        locale.currency(float(s), grouping=True, symbol=False) + " kr",
+        format(float(s), ",.2f").replace(",", " ").replace(".", ",") + " kr",
         attrs=["bold"]
     )
