@@ -1,8 +1,14 @@
+import datetime
+import os
+
 from session_config import session
 from config import SOURCE_ACCOUNT_ID, REFILL_GOALS, TRANSFER_MESSAGE, REVERSE_IF_ABOVE_GOAL
 from utils import *
 
 API_BASE_URL = "https://publicapi.sbanken.no/apibeta/api/v2"
+
+# Directory for storing 'successful refill' markers
+CHECKPOINTS_DIR = "checkpoints"
 
 
 def transfer(auth_session, from_account_id, to_account_id, amount):
@@ -39,7 +45,7 @@ def refill_account(auth_session, destination_account, source_account, refill_goa
     if refill_goal < 0:
         cerror(f"...refill goal must be nonnegative, was {refill_goal}")
         cerror("...aborted.")
-        return
+        return False
 
     cinfo(f"...the goal is {fcurrency(refill_goal)}")
     destination_available_balance = destination_account['available']
@@ -52,7 +58,7 @@ def refill_account(auth_session, destination_account, source_account, refill_goa
     if float(transfer_amount) == 0:
         cspecial(f"...already at the right balance")
         cspecial(f"...no further action.")
-        return
+        return True
 
     cinfo(f"...need to {'skim' if above_goal else 'transfer'} {fcurrency(transfer_amount)}")
 
@@ -60,7 +66,7 @@ def refill_account(auth_session, destination_account, source_account, refill_goa
     if float(transfer_amount) <= 1:
         cerror(f"...transfer amount must be greater than {fcurrency(1)}")
         cerror("...aborted.")
-        return
+        return False
 
     # Comfortably ignoring the documented transfer maximum of 100000000000000000
 
@@ -73,13 +79,13 @@ def refill_account(auth_session, destination_account, source_account, refill_goa
         else:
             cspecial(f"...but REVERSE_IF_ABOVE_GOAL=False")
             cspecial(f"...no further action.")
-            return
+            return True
     else:
         source_available_balance = source_account['available']
         cinfo(f"...sourcing from '{source_account['name']}' at {fcurrency(source_available_balance)}")
         if float(source_available_balance) < float(transfer_amount):
             cerror("...insufficient funds, aborted.")
-            return
+            return False
 
     # Perform actual transfer
     response = transfer(auth_session, source_account['accountId'], destination_account['accountId'],
@@ -88,10 +94,23 @@ def refill_account(auth_session, destination_account, source_account, refill_goa
     if response.status_code != 204:
         cerror("...an error occured.")
         cerror(response.text)
-    else:
-        csuccess("...success!")
+        return False
 
-    # Log updated account details
+    csuccess("...success!")
+    return True
+
+
+# Create an empty file to mark a successful refill
+# This can be used when scheduling refills to recover from a missed refill
+# (for example the server was off at the target date, but turned on a few days later)
+def write_checkpoint_file():
+    if not os.path.isdir(CHECKPOINTS_DIR):
+        os.mkdir(CHECKPOINTS_DIR)
+    # Simply write to file before immediately closing it
+    open(f"{CHECKPOINTS_DIR}/{str(datetime.date.today().isoformat())}", "w").close()
+
+
+def log_account_details(auth_session, destination_account, source_account):
     destination_account = get_account(auth_session, destination_account['accountId'])
     cmuted(f"...'{destination_account['name']}' is at {fcurrency(destination_account['available'])}")
     source_account = get_account(auth_session, source_account['accountId'])
@@ -101,9 +120,16 @@ def refill_account(auth_session, destination_account, source_account, refill_goa
 def main():
     cspecial(f"Authorized as {get_customer_name(session)}. Welcome!")
     source_account = get_account(session, SOURCE_ACCOUNT_ID)
+    success = True
     for destination_account_id, refill_goal in REFILL_GOALS:
         destination_account = get_account(session, destination_account_id)
-        refill_account(session, destination_account, source_account, refill_goal)
+        success = success and refill_account(session, destination_account, source_account, refill_goal)
+        log_account_details(session, destination_account, source_account)
+    if success:
+        # All requests have been fulfilled, so mark the occasion!
+        write_checkpoint_file()
+    else:
+        cerror("WARNING: Some refill requests could not be fulfilled")
 
 
 if __name__ == "__main__":
