@@ -1,25 +1,25 @@
 from termcolor import cprint, colored
 
 
-def cspecial(x): cprint(x, 'cyan')
+def log_special(x): cprint(x, 'cyan')
 
 
-def cinfo(x): cprint(x, 'white')
+def log_info(x): cprint(x, 'white')
 
 
-def cmuted(x): cprint(x, 'white', attrs=['dark'])
+def log_muted(x): cprint(x, 'white', attrs=['dark'])
 
 
-def csuccess(x): cprint(x, 'green')
+def log_success(x): cprint(x, 'green')
 
 
-def cerror(x): cprint(x, 'red')
+def log_error(x): cprint(x, 'red')
 
 
 # Format float string to use space as thousands separator and comma as decimal separator
 # (aka Norwegian style but without requiring the correct locale to be installed...)
 # (see https://www.python.org/dev/peps/pep-0378/)
-def fcurrency(s):
+def fmt_currency(s):
     return colored(
         format(float(s), ",.2f").replace(",", " ").replace(".", ",") + " kr",
         attrs=["bold"]
