@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "replenigo"
+version = "0.1.0"
+description = "Script that utilizes Sbanken's Open Banking API to refill accounts to specified balances"
+authors = ["Mathias Oterhals Myklebust <mathias@oterbust.no>"]
+readme = "README.md"
+homepage = "https://github.com/mathiazom/replenigo"
+repository = "https://github.com/mathiazom/replenigo"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/mathiazom/replenigo/issues"
+
+[tool.poetry.scripts]
+replenigo = "replenigo.main:app"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+oauthlib = "^3.2.2"
+termcolor = "^2.1.1"
+requests-oauthlib = "^1.3.1"
+typer = {extras = ["all"], version = "^0.3.0"}
+rich = "^12.6.0"
+pyyaml = "^6.0"
+
+[tool.poetry.group.dev.dependencies]
+typer-cli = "^0.0.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

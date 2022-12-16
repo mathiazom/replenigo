@@ -1,0 +1,13 @@
+---
+auth: # see https://secure.sbanken.no/Personal/ApiBeta/Info/
+  client_id: "<CLIENT_ID>" # required
+  client_secret: "<CLIENT_SECRET>" # required
+source_account: "<ACCOUNT_ID_FOR_SOURCE>" # required
+refill_goals:
+  #"<ACCOUNT_ID_1>": 12000
+  #"<ACCOUNT_ID_2>": 7200
+#reverse_if_above_goal: true
+#transfer_message: "Custom transfer message"
+#write_checkpoints: false
+#checkpoints_dir: "checks"
+...

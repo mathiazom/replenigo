@@ -1,0 +1,6 @@
+---
+reverse_if_above_goal: false
+transfer_message: "Refill via replenigo"
+write_checkpoints: true
+checkpoints_dir: "checkpoints"
+...
