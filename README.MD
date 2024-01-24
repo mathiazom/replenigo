@@ -1,3 +1,7 @@
+> **ARCHIVED**
+> 
+> As a result of the DNB merger, the Sbanken API Beta service was closed 2024-03-22, dragging `replenigo` along with it 🪦
+
 # replenigo
 
 [![PyPI](https://img.shields.io/pypi/v/replenigo)](https://pypi.org/project/replenigo/)
